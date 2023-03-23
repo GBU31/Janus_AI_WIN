@@ -145,14 +145,10 @@ def set_src_image(image):
                                                   landmarks_points=src_landmark_points,
                                                   np_points=src_np_points)
 
-
 set_src_image(image)
 
-i = 0
 while True:
-    i += 1
-    if i == 10:
-        break
+    
     global src_image, src_image_gray, src_mask, src_landmark_points, src_np_points, src_convexHull, indexes_triangles
 
     _, dest_image = cap.read()
@@ -193,11 +189,11 @@ while True:
     h, w, _ = src_image.shape
     rate = width / w
 
-    # cv2.imshow("Source image", cv2.resize(src_image, (int(w * rate), int(h * rate))))
-    # cv2.imshow("New face", new_face)
+    cv2.imshow("Source image", cv2.resize(src_image, (int(w * rate), int(h * rate))))
+    cv2.imshow("New face", new_face)
     result1.write(result)
-    # cv2.imshow("Result", result)
-    # k = cv2.waitKey(1)
-    # if k==ord('q'):
-    #     break
+    cv2.imshow("Result", result)
+    k = cv2.waitKey(1)
+    if k==ord('q'):
+        break
 cv2.destroyAllWindows()
