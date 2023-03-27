@@ -162,7 +162,7 @@ if __name__ == "__main__":
         set_src_image(image)
         
         
-        result1=cv2.VideoWriter('filename.avi', cv2.VideoWriter_fourcc(*'MJPG'), 25, (640,480))
+        result1=cv2.VideoWriter('output.avi', cv2.VideoWriter_fourcc(*'MJPG'), 25, (640,480))
         
         
 
