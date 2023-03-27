@@ -4,7 +4,7 @@ import mediapipe as mp
 import sys
 import tkinter as tk
 from tkinter import filedialog
-
+from tkintergui import *
 
 
 def get_landmark_points(src_image):
@@ -166,27 +166,7 @@ if __name__ == "__main__":
         
         
 
-    root = tk.Tk()
-    root.title('Janus AI')
-    root.geometry('400x200')
-    root.configure(bg='#F8F8F8')
-    root.iconbitmap('janus.ico')
-    label = tk.Label(root, text="Video file:", font=('Arial', 14))
-    label.pack(pady=10)
-
-    browse_button = tk.Button(root, text="Video File", command=Video)
-    browse_button.pack()
-
-    label = tk.Label(root, text="Image file:", font=('Arial', 14))
-    label.pack(pady=10)
-
-    
-    browse_button2 = tk.Button(root, text="Image File", command=pic)
-    browse_button2.pack()
-
-    run_btn = tk.Button(root, text='Swap', command=root.quit).pack(pady=10)
-    
-    root.mainloop()
+    TkGUI(Video=Video, pic=pic).run()
 
     while True:
         
