@@ -2,18 +2,9 @@ import cv2
 import numpy as np
 import mediapipe as mp
 import sys
-width = 640
-height = 480
-cap = cv2.VideoCapture("DeepFake.mp4")
-result1=cv2.VideoWriter('filename.avi', cv2.VideoWriter_fourcc(*'MJPG'), 25, (640,480))
-cap.set(3, width)
-cap.set(4, height)
+import tkinter as tk
+from tkinter import filedialog
 
-image = cv2.imread("pic.jpg")
-
-mp_drawing = mp.solutions.drawing_utils
-mp_drawing_styles = mp.solutions.drawing_styles
-mp_face_mesh = mp.solutions.face_mesh
 
 
 def get_landmark_points(src_image):
@@ -145,55 +136,105 @@ def set_src_image(image):
                                                   landmarks_points=src_landmark_points,
                                                   np_points=src_np_points)
 
-set_src_image(image)
-
-while True:
+if __name__ == "__main__":
     
-    global src_image, src_image_gray, src_mask, src_landmark_points, src_np_points, src_convexHull, indexes_triangles
-
-    _, dest_image = cap.read()
-    dest_image = cv2.resize(dest_image, (width, height))
-
-    dest_image_gray = cv2.cvtColor(dest_image, cv2.COLOR_BGR2GRAY)
-    dest_mask = np.zeros_like(dest_image_gray)
-
-    dest_landmark_points = get_landmark_points(dest_image)
-    if dest_landmark_points is None:
-        continue
-    dest_np_points = np.array(dest_landmark_points)
-    dest_convexHull = cv2.convexHull(dest_np_points)
-
-    height, width, channels = dest_image.shape
-    new_face = np.zeros((height, width, channels), np.uint8)
+    width = 640
+    height = 480
+    
+   
+    filepath = None
+    def Video():
+        filepath = filedialog.askopenfilename()
+        
+        global cap
+        cap  = cv2.VideoCapture(filepath)
+        cap.set(3, width)
+        cap.set(4, height)
 
 
-    for triangle_index in indexes_triangles:
+    def pic():
+        filepath = filedialog.askopenfilename()
+        global image,  result1, mp_drawing, mp_drawing_styles, mp_face_mesh
+        mp_drawing = mp.solutions.drawing_utils
+        mp_drawing_styles = mp.solutions.drawing_styles
+        mp_face_mesh = mp.solutions.face_mesh
+        image = cv2.imread(filepath)
+        set_src_image(image)
+        
+        
+        result1=cv2.VideoWriter('filename.avi', cv2.VideoWriter_fourcc(*'MJPG'), 25, (640,480))
+        
+        
 
-        points, src_cropped_triangle, cropped_triangle_mask, _ = triangulation(
-            triangle_index=triangle_index,
-            landmark_points=src_landmark_points,
-            img=src_image)
+    root = tk.Tk()
+    root.title('Janus AI')
+    root.geometry('400x200')
+    root.configure(bg='#F8F8F8')
+    root.iconbitmap('janus.ico')
+    label = tk.Label(root, text="Video file:", font=('Arial', 14))
+    label.pack(pady=10)
 
-        points2, _, dest_cropped_triangle_mask, rect = triangulation(triangle_index=triangle_index,
-                                                                                 landmark_points=dest_landmark_points)
+    browse_button = tk.Button(root, text="Video File", command=Video)
+    browse_button.pack()
 
-        warped_triangle = warp_triangle(rect=rect, points1=points, points2=points2,
-                                                    src_cropped_triangle=src_cropped_triangle,
-                                                    dest_cropped_triangle_mask=dest_cropped_triangle_mask)
+    label = tk.Label(root, text="Image file:", font=('Arial', 14))
+    label.pack(pady=10)
 
-        add_piece_of_new_face(new_face=new_face, rect=rect, warped_triangle=warped_triangle)
-    result = swap_new_face(dest_image=dest_image, dest_image_gray=dest_image_gray,
-                                       dest_convexHull=dest_convexHull, new_face=new_face)
+    
+    browse_button2 = tk.Button(root, text="Image File", command=pic)
+    browse_button2.pack()
 
-    result = cv2.medianBlur(result, 3)
-    h, w, _ = src_image.shape
-    rate = width / w
+    run_btn = tk.Button(root, text='Swap', command=root.quit).pack(pady=10)
+    
+    root.mainloop()
 
-    cv2.imshow("Source image", cv2.resize(src_image, (int(w * rate), int(h * rate))))
-    cv2.imshow("New face", new_face)
-    result1.write(result)
-    cv2.imshow("Result", result)
-    k = cv2.waitKey(1)
-    if k==ord('q'):
-        break
-cv2.destroyAllWindows()
+    while True:
+        
+        global src_image, src_image_gray, src_mask, src_landmark_points, src_np_points, src_convexHull, indexes_triangles
+
+        _, dest_image = cap.read()
+        dest_image = cv2.resize(dest_image, (width, height))
+
+        dest_image_gray = cv2.cvtColor(dest_image, cv2.COLOR_BGR2GRAY)
+        dest_mask = np.zeros_like(dest_image_gray)
+
+        dest_landmark_points = get_landmark_points(dest_image)
+        if dest_landmark_points is None:
+            continue
+        dest_np_points = np.array(dest_landmark_points)
+        dest_convexHull = cv2.convexHull(dest_np_points)
+
+        height, width, channels = dest_image.shape
+        new_face = np.zeros((height, width, channels), np.uint8)
+
+
+        for triangle_index in indexes_triangles:
+
+            points, src_cropped_triangle, cropped_triangle_mask, _ = triangulation(
+                triangle_index=triangle_index,
+                landmark_points=src_landmark_points,
+                img=src_image)
+
+            points2, _, dest_cropped_triangle_mask, rect = triangulation(triangle_index=triangle_index,
+                                                                                    landmark_points=dest_landmark_points)
+
+            warped_triangle = warp_triangle(rect=rect, points1=points, points2=points2,
+                                                        src_cropped_triangle=src_cropped_triangle,
+                                                        dest_cropped_triangle_mask=dest_cropped_triangle_mask)
+
+            add_piece_of_new_face(new_face=new_face, rect=rect, warped_triangle=warped_triangle)
+        result = swap_new_face(dest_image=dest_image, dest_image_gray=dest_image_gray,
+                                        dest_convexHull=dest_convexHull, new_face=new_face)
+
+        result = cv2.medianBlur(result, 3)
+        h, w, _ = src_image.shape
+        rate = width / w
+
+        cv2.imshow("Source image", cv2.resize(src_image, (int(w * rate), int(h * rate))))
+        cv2.imshow("New face", new_face)
+        result1.write(result)
+        cv2.imshow("Result", result)
+        k = cv2.waitKey(1)
+        if k==ord('q'):
+            break
+    cv2.destroyAllWindows()
