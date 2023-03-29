@@ -35,9 +35,11 @@ class SettingsTkGUI:
     
     def run_settings(self):
         data = self.get_settings()
-
+        
         root = tk.Tk()
+        root.title('settings')
         root.geometry("400x200")
+        root.iconbitmap('janus.ico')
         widthLabel = tk.Label(root, text="width:")
         widthLabel.pack()
         
