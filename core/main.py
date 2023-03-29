@@ -5,7 +5,7 @@ import sys
 import tkinter as tk
 from tkinter import filedialog
 from tkintergui import *
-
+from settings import *
 
 def get_landmark_points(src_image):
     with mp_face_mesh.FaceMesh(
@@ -137,12 +137,12 @@ def set_src_image(image):
                                                   np_points=src_np_points)
 
 if __name__ == "__main__":
-    
-    width = 640
-    height = 480
+
+    data = SettingsTkGUI().get_settings()
+    width = int(data['width'])
+    height = int(data['height'])
     
    
-    filepath = None
     def Video():
         filepath = filedialog.askopenfilename()
         
