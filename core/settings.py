@@ -15,7 +15,7 @@ class SettingsTkGUI:
 
     def Def_Settings(self):
         with open(self.settings_file_path, 'w') as sf:
-            Default = {"width": "640", "height": '480'}
+            Default = {"width": "640", "height": '480', "res_path":"./output.avi"}
             jd = json.dumps(Default)
             sf.write(jd)
 
@@ -53,9 +53,13 @@ class SettingsTkGUI:
         height = tk.Entry(root)
         height.insert(0, data['height'])
         height.pack()
+        respathLabel = tk.Label(root, text="result video path:").pack()
+        respath = tk.Entry(root)
+        respath.insert(0, data['res_path'])
+        respath.pack()
 
         def on_click():
-            data = {"width": width.get(), "height":height.get()}
+            data = {"width": width.get(), "height":height.get(), "res_path":respath.get()}
             jd = json.dumps(data)
 
             with open(self.settings_file_path, 'w') as file:

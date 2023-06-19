@@ -161,8 +161,8 @@ if __name__ == "__main__":
         image = cv2.imread(filepath)
         set_src_image(image)
         
-        
-        result1=cv2.VideoWriter('output.avi', cv2.VideoWriter_fourcc(*'MJPG'), 25, (640,480))
+        print(data["res_path"])
+        result1=cv2.VideoWriter(data["res_path"], cv2.VideoWriter_fourcc(*'MJPG'), 25, (640,480))
         
         
 
